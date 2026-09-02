@@ -1,0 +1,19 @@
+[Unit]
+Description=FlashNext deterministic-default sampling proxy
+Requires=gx10-flashnext-production.service
+After=gx10-flashnext-production.service network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/gx10-flashnext-production
+Environment=FLASHNEXT_PROXY_LISTEN=http://127.0.0.1:8021
+Environment=FLASHNEXT_PROXY_UPSTREAM=http://127.0.0.1:8019
+Environment=FLASHNEXT_DEFAULT_TEMPERATURE=0
+Environment=FLASHNEXT_DEFAULT_TOP_P=1
+Environment=FLASHNEXT_DEFAULT_TOP_K=-1
+ExecStart=/usr/bin/python3 /srv/gx10-flashnext-production/proxy/sampling_proxy.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

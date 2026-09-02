@@ -1,0 +1,33 @@
+[recipe]
+id = "autoround-mtp3-production"
+model = "Qwen3.8-Flash-Next"
+hardware = "one-gb10-sm121-128gb"
+workload = "single DSH coding-agent session; two requests as telemetry ceiling"
+
+[engine]
+backend = "vLLM 0.1.dev20073+g8e685d198"
+image = "gx10-qwen38-flash-next-lab:autoround-mtp3"
+base_image = "vllm/vllm-openai:qwen38-flash-next@sha256:fc120ece0a388cc0aa1caad4a9f1cd92113484ab7ec2fd0efadd62585be05bf8"
+reload_boundary = "process"
+
+[artifacts]
+checkpoint = "Saren/Qwen3.8-Flash-Next-W4A16-AutoRound-hybrid@8b82f0b7abe3d1150a7827d298c75e86267636ae"
+ple_table = "Saren/Qwen3.8-Flash-Next-ple-table-fp8@50511b0a41aa1d34b8beb7e5d4bb06a0b650dc14"
+
+[runtime]
+context_tokens = 262144
+max_num_seqs = 8
+max_num_batched_tokens = 8192
+kv_cache_memory = "20g"
+mtp_tokens = 3
+prefix_cache = true
+kv_cache_dtype = "auto"
+tool_parser = "qwen3_coder"
+reasoning_parser = "qwen3"
+
+[customization]
+ple = "FP8 PLE table mmap from local NVMe"
+hybrid = "AutoRound W4A16 experts, FP8 side layers"
+qsa = "stock persistent_topk (exact-topk fallback is NOT active)"
+gdn = "GB10 FLA 99 KiB big-tile patch in upstream AutoRound Dockerfile"
+sampling_proxy = "fills omitted temperature=0, top_p=1, top_k=-1"

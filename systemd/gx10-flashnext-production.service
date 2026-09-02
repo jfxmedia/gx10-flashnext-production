@@ -1,0 +1,18 @@
+[Unit]
+Description=FlashNext AutoRound MTP3 production API
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/srv/gx10-flashnext-production
+EnvironmentFile=/srv/gx10-flashnext-production/.env
+ExecStart=/srv/gx10-flashnext-production/scripts/run-production.sh /srv/gx10-flashnext-production/.env
+ExecStartPost=/usr/bin/bash -lc 'for i in {1..180}; do curl -fsS --max-time 2 http://127.0.0.1:8019/v1/models >/dev/null && exit 0; sleep 2; done; exit 1'
+ExecStop=-/usr/bin/docker rm -f flashnext-autoround-mtp3
+TimeoutStartSec=390
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

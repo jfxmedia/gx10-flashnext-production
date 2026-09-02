@@ -1,0 +1,6 @@
+.env
+artifacts/
+vendor/
+results/*.json
+__pycache__/
+*.pyc
